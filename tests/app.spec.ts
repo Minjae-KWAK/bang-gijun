@@ -9,7 +9,19 @@ async function fillRoom(page: Page, name = '직접 등록한 방') {
   await page.getByLabel('메모 선택', { exact: true }).fill('채광 좋음\n수납 부족');
   await page.getByLabel('매물 링크').fill('https://example.com/room');
 }
-test.beforeEach(async ({ page }) => { await page.goto('/'); });
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => {
+    if (sessionStorage.getItem('__testStorageInitialized')) return;
+    sessionStorage.setItem('__testStorageInitialized', 'true');
+    localStorage.setItem('bang-gijun:v1', JSON.stringify({
+      version: 1,
+      rooms: [],
+      conditions: { maxDeposit: null, maxMonthly: null, maxCommute: null, minArea: null, minBuiltYear: null },
+      examplesVersion: 3,
+    }));
+  });
+  await page.goto('/');
+});
 
 test('카드 링크 저장·원문 새 탭 열기·새로고침·수정·제거와 비교표 반영', async ({ page, context }) => {
   const naverUrl = 'https://new.land.naver.com/?test=banggijun#details';
@@ -208,6 +220,16 @@ test('등록·조회·새로고침·수정·삭제와 비교 동기화', async (
   await expect(page.getByRole('table')).toHaveCount(0);
   await page.reload();
   await expect(page.getByRole('article')).toHaveCount(0);
+});
+
+test('새 방문자에게 예시 6개를 자동으로 표시하고 새로고침에도 유지', async ({ page }) => {
+  await page.evaluate(() => localStorage.removeItem('bang-gijun:v1'));
+  await page.reload();
+  await expect(page.getByRole('article')).toHaveCount(6);
+  const saved = await page.evaluate(() => JSON.parse(localStorage.getItem('bang-gijun:v1')!));
+  expect(saved.examplesVersion).toBe(3);
+  await page.reload();
+  await expect(page.getByRole('article')).toHaveCount(6);
 });
 
 test('예시·경계값·필터·정렬·비교 제한·모바일 가로 스크롤', async ({ page }) => {

@@ -148,6 +148,6 @@ export function addExamples(rooms: Room[]): Room[] {
 
 // Upgrade an existing sample collection once; later user deletions and cleared years remain intact.
 export function upgradeExamples(data: Data): Data {
-  if (data.examplesVersion === 3 || data.examplesVersion === undefined && !data.rooms.some(room => room.example && ['example-1', 'example-2', 'example-3'].includes(room.id))) return data;
+  if (data.examplesVersion === 3 || data.examplesVersion === undefined && data.rooms.length > 0 && !data.rooms.some(room => room.example && ['example-1', 'example-2', 'example-3'].includes(room.id))) return data;
   return { ...data, rooms: addExamples(data.rooms), examplesVersion: 3 };
 }

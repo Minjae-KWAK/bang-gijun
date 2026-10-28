@@ -137,7 +137,7 @@ describe('목록과 비교', () => {
     expect(upgraded.examplesVersion).toBe(3);
     expect(upgradeExamples(upgraded)).toBe(upgraded);
   });
-  it('기존 예시를 복원하고 이후 삭제·연도 비우기 및 개인 전용 목록은 유지', () => {
+  it('첫 방문과 이전 예시 버전에는 6개를 복원하고 이후 삭제·개인 전용 목록은 유지', () => {
     const upgraded = upgradeExamples({ ...emptyData(), rooms });
     const edited = { ...upgraded, rooms: upgraded.rooms.filter(room => room.id !== 'example-6').map(room => ({ ...room, builtYear: null })) };
     expect(upgradeExamples(edited)).toBe(edited);
@@ -145,7 +145,10 @@ describe('목록과 비교', () => {
     expect(restored.examplesVersion).toBe(3);
     expect(restored.rooms).toHaveLength(6);
     expect(upgradeExamples(restored)).toBe(restored);
-    const empty = emptyData(); expect(upgradeExamples(empty)).toBe(empty);
+    const firstVisit = upgradeExamples(emptyData());
+    expect(firstVisit.examplesVersion).toBe(3);
+    expect(firstVisit.rooms).toHaveLength(6);
+    const empty = emptyData();
     const personalOnly = { ...empty, rooms: [{ ...rooms[0], id: 'personal', example: false }] };
     expect(upgradeExamples(personalOnly)).toBe(personalOnly);
   });
