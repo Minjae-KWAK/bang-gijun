@@ -11,7 +11,7 @@ export const conditionFields = ['maxDeposit', 'maxMonthly', 'maxCommute', 'minAr
 export type ConditionKey = typeof conditionFields[number];
 export type Conditions = Record<ConditionKey, number | null>;
 export type ConditionDraft = Record<ConditionKey, string>;
-export type Data = { version: 1; rooms: Room[]; conditions: Conditions; examplesVersion?: 2 };
+export type Data = { version: 1; rooms: Room[]; conditions: Conditions; examplesVersion?: 2 | 3 };
 export const emptyConditions: Conditions = { maxDeposit: null, maxMonthly: null, maxCommute: null, minArea: null, minBuiltYear: null };
 export const emptyDraft: RoomDraft = { name: '', location: '', deposit: '', rent: '', fee: '', area: '', commute: '', floor: '', link: '', memo: '', builtYear: '' };
 export const emptyData = (): Data => ({ version: 1, rooms: [], conditions: { ...emptyConditions } });
@@ -148,6 +148,6 @@ export function addExamples(rooms: Room[]): Room[] {
 
 // Upgrade an existing sample collection once; later user deletions and cleared years remain intact.
 export function upgradeExamples(data: Data): Data {
-  if (data.examplesVersion === 2 || !data.rooms.some(room => room.example && ['example-1', 'example-2', 'example-3'].includes(room.id))) return data;
-  return { ...data, rooms: addExamples(data.rooms), examplesVersion: 2 };
+  if (data.examplesVersion === 3 || data.examplesVersion === undefined && !data.rooms.some(room => room.example && ['example-1', 'example-2', 'example-3'].includes(room.id))) return data;
+  return { ...data, rooms: addExamples(data.rooms), examplesVersion: 3 };
 }

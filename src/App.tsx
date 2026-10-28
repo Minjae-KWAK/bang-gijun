@@ -117,8 +117,8 @@ export default function App() {
       </section>
       <section className="listing" aria-labelledby="list-title"><div className="section-heading"><div className="heading-with-icon"><span className="section-number">02</span><h2 id="list-title">내가 모은 매물 <span className="count">{data.rooms.length}</span></h2></div><button className="quiet sample-button" onClick={() => {
         const next = addExamples(data.rooms);
-        if (next === data.rooms && data.examplesVersion === 2) { setNotice('예시 매물이 이미 모두 등록되어 있습니다.'); return; }
-        commit({ ...data, rooms: next, examplesVersion: 2 }, '가상 예시 6개를 불러오고 비어 있던 준공연도를 채웠습니다. 직접 입력한 매물과 수정 정보는 유지됩니다.');
+        if (next === data.rooms && data.examplesVersion === 3) { setNotice('예시 매물이 이미 모두 등록되어 있습니다.'); return; }
+        commit({ ...data, rooms: next, examplesVersion: 3 }, '가상 예시 6개를 불러오고 비어 있던 준공연도를 채웠습니다. 직접 입력한 매물과 수정 정보는 유지됩니다.');
       }}>예시 매물 불러오기 ↗</button></div>
       <div className="toolbar"><div className="filters"><label><input type="checkbox" checked={onlyFavorites} onChange={e => setOnlyFavorites(e.target.checked)} />관심 매물만</label><label className={!conditionCount ? 'disabled' : ''}><input type="checkbox" checked={onlyMatches && conditionCount > 0} disabled={!conditionCount} onChange={e => setOnlyMatches(e.target.checked)} />모든 조건 충족</label></div><label className="sort-label">정렬<select aria-label="매물 정렬" value={sort} onChange={e => setSort(e.target.value as Sort)}><option value="newest">최신 등록순</option><option value="monthly">월 고정비 낮은 순</option><option value="commute">통학시간 짧은 순</option><option value="area">면적 넓은 순</option><option value="builtNewest">준공연도 최신순</option><option value="builtOldest">준공연도 오래된 순</option></select></label></div>
       <div className="building-controls"><div className="unit-controls" role="group" aria-label="면적 표시 단위"><span>면적 표시</span><button type="button" aria-pressed={areaUnit === 'sqm'} onClick={() => setAreaUnit('sqm')}>㎡</button><button type="button" aria-pressed={areaUnit === 'pyeong'} onClick={() => setAreaUnit('pyeong')}>평</button></div></div>

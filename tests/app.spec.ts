@@ -312,7 +312,7 @@ test('기존 예시 6개 자동 업데이트·수정 보존·중복 및 재생�
   await expect(card(page, '염창 B')).toContainText('2010년 준공');
   await expect(card(page, '내 매물')).toContainText('준공연도 미입력');
   const saved = await page.evaluate(() => JSON.parse(localStorage.getItem('bang-gijun:v1')!));
-  expect(saved.examplesVersion).toBe(2);
+  expect(saved.examplesVersion).toBe(3);
   expect(saved.rooms.filter((room: { example: boolean; builtYear: number | null }) => room.example && room.builtYear != null)).toHaveLength(6);
   await page.getByRole('button', { name: '예시 매물 불러오기' }).click();
   await page.reload();
@@ -326,6 +326,19 @@ test('기존 예시 6개 자동 업데이트·수정 보존·중복 및 재생�
   await expect(page.getByRole('article')).toHaveCount(6);
   await expect(card(page, '상수 D')).toHaveCount(0);
   await expect(card(page, '응암 A')).toContainText('준공연도 미입력');
+});
+
+test('이전 예시를 삭제한 브라우저에서도 6개 예시를 한 번 복원', async ({ page }) => {
+  await page.evaluate(data => localStorage.setItem('bang-gijun:v1', JSON.stringify({ ...data, examplesVersion: 2 })), emptyData());
+  await page.reload();
+  await expect(page.getByRole('article')).toHaveCount(6);
+  const saved = await page.evaluate(() => JSON.parse(localStorage.getItem('bang-gijun:v1')!));
+  expect(saved.examplesVersion).toBe(3);
+  page.once('dialog', dialog => dialog.accept());
+  await card(page, '응암 A').getByRole('button', { name: '삭제', exact: true }).click();
+  await page.reload();
+  await expect(page.getByRole('article')).toHaveCount(5);
+  await expect(card(page, '응암 A')).toHaveCount(0);
 });
 
 test('예시 자동 업데이트 저장 실패 시 원본 유지와 수동 재시도', async ({ page }) => {

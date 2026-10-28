@@ -134,12 +134,17 @@ describe('목록과 비교', () => {
     expect(upgraded.conditions).toBe(conditions);
     expect(original.rooms).toHaveLength(4);
     expect(original.rooms[0].builtYear).toBeUndefined();
+    expect(upgraded.examplesVersion).toBe(3);
     expect(upgradeExamples(upgraded)).toBe(upgraded);
   });
-  it('업데이트 후 삭제·연도 비우기를 되돌리지 않고 처음 빈 목록 유지', () => {
+  it('기존 예시를 복원하고 이후 삭제·연도 비우기 및 개인 전용 목록은 유지', () => {
     const upgraded = upgradeExamples({ ...emptyData(), rooms });
     const edited = { ...upgraded, rooms: upgraded.rooms.filter(room => room.id !== 'example-6').map(room => ({ ...room, builtYear: null })) };
     expect(upgradeExamples(edited)).toBe(edited);
+    const restored = upgradeExamples({ ...emptyData(), examplesVersion: 2, rooms: [] });
+    expect(restored.examplesVersion).toBe(3);
+    expect(restored.rooms).toHaveLength(6);
+    expect(upgradeExamples(restored)).toBe(restored);
     const empty = emptyData(); expect(upgradeExamples(empty)).toBe(empty);
     const personalOnly = { ...empty, rooms: [{ ...rooms[0], id: 'personal', example: false }] };
     expect(upgradeExamples(personalOnly)).toBe(personalOnly);

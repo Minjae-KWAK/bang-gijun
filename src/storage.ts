@@ -5,7 +5,7 @@ export function isData(value: unknown): value is Data {
   if (!value || typeof value !== 'object') return false;
   const data = value as Data;
   if (data.version !== 1 || !Array.isArray(data.rooms) || !data.conditions || typeof data.conditions !== 'object') return false;
-  if (data.examplesVersion !== undefined && data.examplesVersion !== 2) return false;
+  if (data.examplesVersion !== undefined && data.examplesVersion !== 2 && data.examplesVersion !== 3) return false;
   const conditions = data.conditions as Conditions;
   if (!conditionFields.every(key => conditions[key] === null || typeof conditions[key] === 'number' && Number.isFinite(conditions[key]))) return false;
   if (Object.keys(validateConditions(conditionsDraft(conditions))).length) return false;
